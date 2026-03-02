@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ShopController;
+
+
+Route::resource('products', ProductController::class);
+Route::resource('categories', CategoryController::class);
+Route::resource('orders', OrderController::class);
+Route::resource('users', UserController::class);
+
+Route::get('/', [ShopController::class, 'index'])->name('shop.index');
+Route::get('/products/{product}', [ShopController::class, 'show'])->name('shop.show');
+Route::post('/products/{product}/add-to-cart', [ShopController::class, 'addToCart'])->name('shop.addToCart');
+Route::get('/cart', [ShopController::class, 'cart'])->name('shop.cart');
+Route::delete('/cart/{product}', [ShopController::class, 'removeFromCart'])->name('shop.removeFromCart');
+// Checkout
+Route::get('/checkout', [ShopController::class, 'checkoutForm'])->name('shop.checkoutForm');
+Route::post('/checkout', [ShopController::class, 'checkout'])->name('shop.checkout');
+
+Route::get('/shop/orders/history', [ShopController::class, 'orderHistory'])->name('shop.orders.history');
+Route::get('/shop/orders', [ShopController::class, 'ordersIndex'])->name('shop.orders.index');
+Route::get('/shop/orders/{order}', [ShopController::class, 'ordersShow'])->name('shop.orders.show');
+
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+

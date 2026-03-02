@@ -1,0 +1,203 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use Illuminate\Http\Request;
+use App\Models\Order;
+use App\Models\OrderItem;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use App\Models\Category;
+
+class ShopController extends Controller
+{
+    /**
+     * Display the product catalog.
+     */
+    public function index(Request $request)
+    {
+        // Eager load relations
+        $query = Product::with(['category', 'images']);
+
+        // Filter by category if selected
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Search by product name
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Paginate results
+        $products = $query->latest()->paginate(12);
+
+        // Fetch categories for dropdown
+        $categories = Category::all();
+
+        return view('shop.index', compact('products', 'categories'));
+    }
+
+    /**
+     * Display a specific product.
+     */
+    public function show(Product $product)
+    {
+        // Load relations for the specific product
+        $product->load(['category', 'images']);
+
+        // Get related products (same category) for "You May Also Like"
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->limit(4)
+            ->get();
+
+        return view('shop.show', compact('product', 'relatedProducts'));
+    }
+
+    /**
+     * Add a product to the current user's cart (simplified).
+     */
+    public function addToCart(Request $request, Product $product)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $cart = session()->get('cart', []);
+
+        $cartItemKey = $product->id;
+
+        if (isset($cart[$cartItemKey])) {
+            $cart[$cartItemKey]['quantity'] += $request->quantity;
+        } else {
+            $cart[$cartItemKey] = [
+                'product_id' => $product->id,
+                'name'       => $product->name,
+                'price'      => $product->price,
+                'quantity'   => $request->quantity,
+                'image'      => $product->images->first()
+                                ? $product->images->first()->image_path
+                                : null,
+            ];
+        }
+
+        session()->put('cart', $cart);
+
+        return redirect()->back()->with('success', "{$product->name} added to cart.");
+    }
+
+    /**
+     * Show the user's cart.
+     */
+    public function cart()
+    {
+        $cart = session()->get('cart', []);
+        return view('shop.cart', compact('cart'));
+    }
+
+    public function removeFromCart(Product $product)
+    {
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$product->id])) {
+            unset($cart[$product->id]);
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->route('shop.cart')->with('success', "{$product->name} removed from cart.");
+    }
+
+    public function checkoutForm()
+    {
+        $cart = session()->get('cart', []);
+
+        if (empty($cart)) {
+            return redirect()->route('shop.index')->with('error', 'Your cart is empty.');
+        }
+
+        return view('shop.checkout', compact('cart'));
+    }
+
+    public function checkout(Request $request)
+    {
+        $cart = session()->get('cart', []);
+
+        $request->validate([
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'city' => 'required|string|max:100',
+            'province' => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:20',
+            'country' => 'required|string|max:100',
+            'payment_method' => 'required|in:cod,gcash,card',
+        ]);
+
+        DB::transaction(function () use ($cart, $request) {
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'order_number' => Str::uuid(),
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'city' => $request->city,
+                'province' => $request->province,
+                'postal_code' => $request->postal_code,
+                'country' => $request->country,
+                'payment_method' => $request->payment_method,
+                'status' => 'pending',
+                'tracking_id' => null,
+            ]);
+
+            foreach ($cart as $item) {
+                OrderItem::create([
+                    'order_id'   => $order->id,
+                    'product_id' => $item['product_id'],
+                    'quantity'   => $item['quantity'],
+                    'price'      => $item['price'],
+                ]);
+            }
+        });
+
+        session()->forget('cart');
+
+        return redirect()->route('shop.index')->with('success', 'Order placed successfully!');
+    }
+
+    public function ordersIndex()
+    {
+        // Get only the authenticated user's orders
+        $orders = Order::where('user_id', Auth::id())
+            ->whereIn('status', ['pending', 'processing', 'shipped'])
+            ->with('items.product')   // eager load items and products
+            ->latest()
+            ->paginate(10);
+
+        return view('shop.orders.index', compact('orders'));
+    }
+
+    public function ordersShow(Order $order)
+    {
+        // Ensure the customer can only view their own orders
+        if ($order->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized access to this order.');
+        }
+
+        $order->load('items.product');
+
+        return view('shop.orders.show', compact('order'));
+    }
+
+    public function orderHistory()
+    {
+        $orders = Order::where('user_id', Auth::id())
+            ->whereIn('status', ['completed', 'cancelled']) // only completed & cancelled
+            ->with('items.product')
+            ->latest()
+            ->paginate(10);
+
+        return view('shop.orders.history', compact('orders'));
+    }
+
+}
