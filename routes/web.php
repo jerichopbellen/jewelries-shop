@@ -11,6 +11,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController as ShopReview;
 use App\Http\Controllers\Admin\ReviewController as AdminReview;
+use App\Http\Controllers\Admin\DashboardController;
 
 
 
@@ -51,3 +52,4 @@ Route::post('/reviews/{product}', [ShopReview::class, 'store'])->name('reviews.s
 Route::get('/admin/reviews', [AdminReview::class, 'index'])->name('admin.reviews.index');
 Route::delete('/admin/reviews/{review}', [AdminReview::class, 'destroy'])->name('admin.reviews.destroy');
 
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');

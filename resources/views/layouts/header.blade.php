@@ -36,6 +36,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark border-0 shadow-lg mt-2" 
                                 style="background: #001f3f; border-top: 2px solid #d4af37 !important;">
+                                <li><a class="dropdown-item py-2" href="{{ route('admin.dashboard') }}"><i class="fa fa-tachometer-alt me-2"></i> Dashboard</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('products.index') }}"><i class="fa fa-gem me-2"></i> Products</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('categories.index') }}"><i class="fa fa-th-large me-2"></i> Categories</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('orders.index') }}"><i class="fa fa-shopping-bag me-2"></i> Orders</a></li>
