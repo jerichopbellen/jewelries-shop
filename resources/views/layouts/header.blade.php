@@ -65,7 +65,14 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="text-end me-2 d-none d-lg-block">
-                                <small class="d-block text-muted" style="font-size: 0.7rem; line-height: 1;">Logged in as</small>
+                                <small class="d-block text-uppercase" 
+                                    style="font-size: 0.65rem; 
+                                            line-height: 1.2; 
+                                            color: rgba(255, 255, 255, 0.6); 
+                                            letter-spacing: 0.5px; 
+                                            font-weight: 500;">
+                                    Logged in as
+                                </small>                                
                                 <span style="color: #d4af37; font-weight: 600;">{{ Auth::user()->name }}</span>
                             </div>
                             <img src="{{ Auth::user()->image_path ? asset('storage/' . Auth::user()->image_path) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=d4af37&color=001f3f' }}" 
