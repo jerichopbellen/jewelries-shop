@@ -34,4 +34,15 @@ class Product extends Model
             'name' => $this->name,
         ];
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // Helper to get the average rating for the UI
+    public function averageRating()
+    {
+        return $this->reviews()->avg('rating') ?? 5;
+    }
 }

@@ -39,6 +39,7 @@
                                 <li><a class="dropdown-item py-2" href="{{ route('products.index') }}"><i class="fa fa-gem me-2"></i> Products</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('categories.index') }}"><i class="fa fa-th-large me-2"></i> Categories</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('orders.index') }}"><i class="fa fa-shopping-bag me-2"></i> Orders</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ route('admin.reviews.index') }}"><i class="fa fa-comments me-2"></i> Reviews</a></li>
                                 <li><hr class="dropdown-divider bg-secondary"></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('users.index') }}"><i class="fa fa-users me-2"></i> User Management</a></li>
                             </ul>

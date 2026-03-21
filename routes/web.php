@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController as ShopReview;
+use App\Http\Controllers\Admin\ReviewController as AdminReview;
 
 
 
@@ -43,4 +45,9 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::post('/reviews/{product}', [ShopReview::class, 'store'])->name('reviews.store');
+
+
+Route::get('/admin/reviews', [AdminReview::class, 'index'])->name('admin.reviews.index');
+Route::delete('/admin/reviews/{review}', [AdminReview::class, 'destroy'])->name('admin.reviews.destroy');
 
