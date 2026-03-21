@@ -21,24 +21,36 @@ class AuthController extends Controller
     }
 
     // Register Logic
+
     public function register(Request $request)
     {
-        $credentials = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+        //dd($request->all());
+        $request->validate([
+            'name'       => 'required|string|max:255',
+            'email'      => 'required|string|email|max:255|unique:users',
+            'password'   => 'required|string|min:8|confirmed',
+            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // 2MB Max
         ]);
 
+        // Handle Image Upload
+        $path = null;
+        if ($request->hasFile('image_path')) {
+            // This stores it in storage/app/public/profile_pictures
+            $path = $request->file('image_path')->store('profile_pictures', 'public');
+        }
+
         $user = User::create([
-            'name'     => $credentials['name'],
-            'email'    => $credentials['email'],
-            'password' => Hash::make($credentials['password']),
-            'role'     => 'customer', // default role
+            'name'       => $request->name,
+            'email'      => $request->email,
+            'password'   => Hash::make($request->password),
+            'role'       => 'customer',
+            'image_path' => $path,
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('shop.index')->with('success', 'Welcome to Jewelry Shop!');
+        return redirect()->route('shop.index')
+            ->with('success', 'Welcome to Ethereal Jewels, ' . $user->name . '!');
     }
 
     // Login Logic

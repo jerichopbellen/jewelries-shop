@@ -82,6 +82,11 @@
                             style="background: #001f3f; border-top: 2px solid #d4af37 !important;">
                             <li><a class="dropdown-item py-2" href="{{ route('shop.orders.index') }}"><i class="fa fa-list-alt me-2"></i> My Orders</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('shop.orders.history') }}"><i class="fa fa-history me-2"></i> Order History</a></li>
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ route('profile.index') }}">
+                                    <i class="fa fa-user-circle me-2"></i> My Profile
+                                </a>
+                            </li>
                             <li><hr class="dropdown-divider bg-secondary"></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">

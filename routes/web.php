@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ProfileController;
 
 
 
@@ -28,6 +29,10 @@ Route::post('/checkout', [ShopController::class, 'checkout'])->name('shop.checko
 Route::get('/shop/orders/history', [ShopController::class, 'orderHistory'])->name('shop.orders.history');
 Route::get('/shop/orders', [ShopController::class, 'ordersIndex'])->name('shop.orders.index');
 Route::get('/shop/orders/{order}', [ShopController::class, 'ordersShow'])->name('shop.orders.show');
+
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
