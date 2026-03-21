@@ -3,15 +3,12 @@
 @section('body')
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Categories</h1>
-        <a href="{{ route('categories.create') }}" class="btn btn-primary shadow-sm">
-            <i class="fa fa-plus fa-sm text-white-50"></i> Add Category
-        </a>
+        <h1 class="h3 mb-0 text-gray-800">User Management</h1>
     </div>
 
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Product Categories</h6>
+            <h6 class="m-0 font-weight-bold text-primary">All Registered Users</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">

@@ -28,22 +28,32 @@ class UserController extends Controller
         return view('admin.users.show', compact('user'));
     }
 
-    /**
-     * Update the role of a user.
-     */
-    public function updateRole(Request $request, User $user)
+    public function edit(User $user)
     {
-        // Prevent admins from accidentally de-promoting themselves
-        if (Auth::id() === $user->id) {
-            return redirect()->back()->with('error', 'You cannot change your own role.');
-        }
+        // This looks for resources/views/admin/users/edit.blade.php
+        return view('admin.users.edit', compact('user'));
+    }
 
+    /**
+     * Update the specified user in storage.
+     */
+    public function update(Request $request, User $user)
+    {
         $request->validate([
-            'role' => 'required|in:user,admin',
+            'role'      => 'required|in:admin,customer',
+            'is_active' => 'required|boolean',
         ]);
 
-        $user->update(['role' => $request->role]);
+        // Safety check: Prevent admin from locking themselves out
+        if (Auth::id() === $user->id && $request->is_active == 0) {
+            return back()->with('error', 'You cannot deactivate your own account.');
+        }
 
-        return redirect()->back()->with('success', "Role for {$user->name} updated to {$request->role}.");
+        $user->update([
+            'role'      => $request->role,
+            'is_active' => $request->is_active,
+        ]);
+
+        return redirect()->route('users.index')->with('success', 'User permissions updated.');
     }
 }

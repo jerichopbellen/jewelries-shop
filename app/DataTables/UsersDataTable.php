@@ -12,16 +12,13 @@ class UsersDataTable extends DataTable
     {
         return datatables()
             ->eloquent($query)
+            ->editColumn('created_at', function($row) {
+                return $row->created_at ? $row->created_at->format('M d, Y h:i A') : '';
+            })
             ->addColumn('action', function($row) {
                 return '
                     <div class="d-flex border-0">
-                        <a href="'.route('admin.users.edit', $row->id).'" class="btn btn-sm btn-warning me-2">Edit</a>
-                        
-                        <form action="'.route('admin.users.destroy', $row->id).'" method="POST" onsubmit="return confirm(\'Are you sure?\')">
-                            '.csrf_field().'
-                            '.method_field('DELETE').'
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
+                        <a href="'.route('users.edit', $row->id).'" class="btn btn-sm btn-warning me-2">Edit</a>
                     </div>';
             })
             ->setRowId('id')
