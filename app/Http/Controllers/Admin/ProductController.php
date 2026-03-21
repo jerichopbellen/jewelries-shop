@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Imports\ProductsImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -89,7 +91,9 @@ class ProductController extends Controller
                 $image = ProductImage::find($imageId);
                 if ($image) {
                     // Delete file from storage
-                    Storage::disk('public')->delete($image->image_path);
+                    if ($image->image_path !== 'placeholders/product.png') {
+                        Storage::disk('public')->delete($image->image_path);
+                    }
                     // Delete record from database
                     $image->delete();
                 }
@@ -117,12 +121,28 @@ class ProductController extends Controller
     {
         // Delete associated images from storage and DB
         foreach ($product->images as $image) {
-            Storage::disk('public')->delete($image->image_path);
+            if ($image->image_path !== 'placeholders/product.png') {
+                Storage::disk('public')->delete($image->image_path);
+            }
             $image->delete();
         }
 
         $product->delete();
 
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ]);
+
+        try {
+            Excel::import(new ProductsImport, $request->file('file'));
+            return back()->with('success', 'Products imported successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'There was a problem importing your file: ' . $e->getMessage());
+        }
     }
 }

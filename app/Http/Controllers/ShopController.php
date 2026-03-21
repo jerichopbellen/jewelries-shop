@@ -38,7 +38,7 @@ class ShopController extends Controller
             ->when($maxPrice !== null, function ($query) use ($maxPrice) {
                 return $query->where('price', '<=', $maxPrice);
             })
-            ->paginate(12)
+            ->simplePaginate(12)
             ->withQueryString();
 
         $categories = Category::all();
@@ -209,7 +209,7 @@ class ShopController extends Controller
     public function cancel(Order $order)
     {
         // Ensure the order belongs to the user and hasn't been shipped yet
-        if ($order->user_id !== auth()->id()) {
+        if ($order->user_id !== Auth::id()) {
             abort(403);
         }
 

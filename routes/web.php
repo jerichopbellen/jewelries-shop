@@ -17,6 +17,8 @@ Route::resource('categories', CategoryController::class);
 Route::resource('orders', OrderController::class);
 Route::resource('users', UserController::class);
 
+Route::post('/products/import', [ProductController::class, 'import'])->name('products.import');
+
 Route::get('/', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/products/{product}', [ShopController::class, 'show'])->name('shop.show');
 Route::post('/products/{product}/add-to-cart', [ShopController::class, 'addToCart'])->name('shop.addToCart');
