@@ -31,12 +31,6 @@ class OrdersDataTable extends DataTable
                 return '
                     <div class="d-flex border-0">
                         <a href="' . route('orders.show', $row->id) . '" class="btn btn-sm btn-info me-2">View</a>
-                        
-                        <form action="' . route('orders.destroy', $row->id) . '" method="POST" onsubmit="return confirm(\'Are you sure?\')">
-                            ' . csrf_field() . '
-                            ' . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
                     </div>';
             })
             ->setRowId('id')

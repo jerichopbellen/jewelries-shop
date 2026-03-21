@@ -38,10 +38,11 @@
                             
                             @php
                                 $statusStyles = [
-                                    'pending'   => 'background: #fff8e1; color: #ff8f00; border: 1px solid #ffe082;',
-                                    'completed' => 'background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7;',
-                                    'cancelled' => 'background: #ffebee; color: #c62828; border: 1px solid #ef9a9a;',
-                                    'shipped'   => 'background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9;',
+                                    'pending'    => 'background: #fff8e1; color: #ff8f00; border: 1px solid #ffe082;',
+                                    'processing' => 'background: #e1f5fe; color: #0288d1; border: 1px solid #b3e5fc;',
+                                    'shipped'    => 'background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9;',
+                                    'delivered'  => 'background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7;',
+                                    'cancelled'  => 'background: #ffebee; color: #c62828; border: 1px solid #ef9a9a;',
                                 ];
                                 $currentStyle = $statusStyles[strtolower($order->status)] ?? 'background: #f5f5f5; color: #616161; border: 1px solid #bdbdbd;';
                             @endphp
@@ -51,12 +52,13 @@
                             </span>
                         </div>
 
+                        {{-- Order Preview (Items) --}}
                         <div class="mb-4">
                             @foreach($order->items->take(3) as $item)
                                 <div class="d-flex align-items-center mb-3">
                                     <div class="me-3">
                                         @php $image = $item->product->images->first(); @endphp
-                                        <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/60' }}" 
+                                        <img src="{{ $image ? asset('storage/' . $image->image_path) : asset('images/no-image.png') }}" 
                                              class="rounded shadow-sm"
                                              style="width:55px; height:55px; object-fit:cover; border: 1px solid #f0f0f0;">
                                     </div>
@@ -71,6 +73,7 @@
                             @endif
                         </div>
 
+                        {{-- Card Footer --}}
                         <div class="pt-3 d-flex justify-content-between align-items-center" style="border-top: 1px solid #f8f9fa;">
                             <div>
                                 <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Total Amount</small>
@@ -80,7 +83,7 @@
                             <a href="{{ route('shop.orders.show', $order->id) }}" 
                                class="btn btn-sm px-4 fw-bold shadow-sm" 
                                style="background-color:#001f3f; color:#d4af37; border:1px solid #d4af37; border-radius: 5px;">
-                                VIEW INVOICE <i class="fa fa-chevron-right ms-2" style="font-size: 0.7rem;"></i>
+                                DETAILS <i class="fa fa-chevron-right ms-2" style="font-size: 0.7rem;"></i>
                             </a>
                         </div>
                     </div>
@@ -99,7 +102,7 @@
         transform: translateY(-3px);
         box-shadow: 0 10px 20px rgba(0,31,63,0.1) !important;
     }
-    /* Customizing Laravel Pagination to match Ethereal theme */
+    /* Pagination Theming */
     .page-item.active .page-link {
         background-color: #001f3f !important;
         border-color: #d4af37 !important;

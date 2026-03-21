@@ -65,14 +65,13 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order)
     {
-        $validated = $request->validate([
-            'total_amount' => 'nullable|numeric|min:0',
-            'status'       => 'required|string|max:50',
+        $request->validate([
+            'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
         ]);
 
-        $order->update($validated);
+        $order->update(['status' => $request->status]);
 
-        return redirect()->route('orders.index')->with('success', 'Order updated successfully.');
+        return back()->with('success', 'Order status updated to ' . ucfirst($request->status));
     }
 
     /**

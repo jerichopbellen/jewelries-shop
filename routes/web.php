@@ -29,6 +29,7 @@ Route::post('/checkout', [ShopController::class, 'checkout'])->name('shop.checko
 Route::get('/shop/orders/history', [ShopController::class, 'orderHistory'])->name('shop.orders.history');
 Route::get('/shop/orders', [ShopController::class, 'ordersIndex'])->name('shop.orders.index');
 Route::get('/shop/orders/{order}', [ShopController::class, 'ordersShow'])->name('shop.orders.show');
+Route::post('/shop/orders/{order}/cancel', [ShopController::class, 'cancel'])->name('shop.orders.cancel');
 
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');

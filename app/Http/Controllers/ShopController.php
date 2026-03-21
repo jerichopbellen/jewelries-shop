@@ -198,12 +198,30 @@ class ShopController extends Controller
     public function orderHistory()
     {
         $orders = Order::where('user_id', Auth::id())
-            ->whereIn('status', ['completed', 'cancelled']) // only completed & cancelled
+            ->whereIn('status', ['Delivered', 'cancelled']) // only completed & cancelled
             ->with('items.product')
             ->latest()
             ->paginate(10);
 
         return view('shop.orders.history', compact('orders'));
+    }
+
+    public function cancel(Order $order)
+    {
+        // Ensure the order belongs to the user and hasn't been shipped yet
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $restrictedStatuses = ['shipped', 'delivered', 'cancelled'];
+        
+        if (in_array(strtolower($order->status), $restrictedStatuses)) {
+            return back()->with('error', 'This order cannot be cancelled as it is already ' . $order->status . '.');
+        }
+
+        $order->update(['status' => 'cancelled']);
+
+        return back()->with('success', 'Your order has been successfully cancelled.');
     }
 
 }
