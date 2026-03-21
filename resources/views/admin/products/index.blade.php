@@ -1,26 +1,40 @@
 @extends('layouts.base')
 
 @section('body')
-<div class="container py-5">
+<div class="container py-5" style="font-family:'Montserrat','Segoe UI',sans-serif;">
+    {{-- Flash messages for success/errors --}}
+    @include('layouts.flash-messages')
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0" style="color:#001f3f; letter-spacing:1px; font-weight:600;">
-            <i class="fa fa-box" style="color:#d4af37;"></i> PRODUCTS
-        </h1>
+        <h3 class="fw-bold mb-0" style="color:#001f3f; letter-spacing:1px;">
+            <i class="fa fa-gem" style="color:#d4af37;"></i> PRODUCTS
+        </h3>
         <a href="{{ route('products.create') }}" 
-           class="btn px-4" 
+           class="btn px-4 shadow-sm" 
            style="background-color:#001f3f; color:#d4af37; border:2px solid #d4af37; font-weight:600; letter-spacing:0.5px;">
             <i class="fa fa-plus"></i> ADD PRODUCT
         </a>
     </div>
 
-    <div class="card border-0 shadow-sm rounded">
-        <div class="card-body">
-            {!! $dataTable->table(['class' => 'table align-middle shadow-sm']) !!}
+    <div class="card border-0 shadow-sm" style="border-radius:8px; overflow:hidden;">
+        <div class="card-header py-3" style="background-color:#001f3f; border:none;">
+            <h6 class="m-0 font-weight-bold" style="color:#d4af37; letter-spacing:0.5px;">
+                INVENTORY LIST
+            </h6>
+        </div>
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                {!! $dataTable->table([
+                    'class' => 'table table-hover align-middle w-100',
+                    'style' => 'border-collapse: separate; border-spacing: 0;'
+                ]) !!}
+            </div>
         </div>
     </div>
 </div>
 @endsection
 
 @push('scripts')
+    {{-- Yajra DataTables Scripts --}}
     {!! $dataTable->scripts() !!}
 @endpush

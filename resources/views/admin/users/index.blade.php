@@ -1,18 +1,29 @@
 @extends('layouts.base')
 
 @section('body')
-<div class="container py-5">
+<div class="container py-5" style="font-family:'Montserrat','Segoe UI',sans-serif;">
+    {{-- Flash messages for successful updates/deletions --}}
+    @include('layouts.flash-messages')
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">User Management</h1>
+        <h3 class="fw-bold mb-0" style="color:#001f3f; letter-spacing:1px;">
+            <i class="fa fa-users" style="color:#d4af37;"></i> USER MANAGEMENT
+        </h3>
+        {{-- If you ever want an 'Add User' button, it would go here --}}
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3">
-            <h6 class="m-0 font-weight-bold text-primary">All Registered Users</h6>
+    <div class="card border-0 shadow-sm" style="border-radius:8px; overflow:hidden;">
+        <div class="card-header py-3" style="background-color:#001f3f; border:none;">
+            <h6 class="m-0 font-weight-bold" style="color:#d4af37; letter-spacing:0.5px;">
+                ALL REGISTERED USERS
+            </h6>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             <div class="table-responsive">
-                {!! $dataTable->table(['class' => 'table table-bordered table-striped align-middle w-100']) !!}
+                {!! $dataTable->table([
+                    'class' => 'table table-hover align-middle w-100',
+                    'style' => 'border-collapse: separate; border-spacing: 0;'
+                ]) !!}
             </div>
         </div>
     </div>

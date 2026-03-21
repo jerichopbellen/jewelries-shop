@@ -1,21 +1,33 @@
 @extends('layouts.base')
 
 @section('body')
-<div class="container py-5">
+<div class="container py-5" style="font-family:'Montserrat','Segoe UI',sans-serif;">
+    {{-- Flash messages for success/errors --}}
+    @include('layouts.flash-messages')
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Categories</h1>
-        <a href="{{ route('categories.create') }}" class="btn btn-primary shadow-sm">
-            <i class="fa fa-plus fa-sm text-white-50"></i> Add Category
+        <h3 class="fw-bold mb-0" style="color:#001f3f; letter-spacing:1px;">
+            <i class="fa fa-th-large" style="color:#d4af37;"></i> CATEGORIES
+        </h3>
+        <a href="{{ route('categories.create') }}" 
+           class="btn px-4 shadow-sm" 
+           style="background-color:#001f3f; color:#d4af37; border:2px solid #d4af37; font-weight:600; letter-spacing:0.5px;">
+            <i class="fa fa-plus"></i> ADD CATEGORY
         </a>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Product Categories</h6>
+    <div class="card border-0 shadow-sm" style="border-radius:8px; overflow:hidden;">
+        <div class="card-header py-3" style="background-color:#001f3f; border:none;">
+            <h6 class="m-0 font-weight-bold" style="color:#d4af37; letter-spacing:0.5px;">
+                PRODUCT COLLECTIONS
+            </h6>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             <div class="table-responsive">
-                {!! $dataTable->table(['class' => 'table table-bordered table-striped align-middle w-100']) !!}
+                {!! $dataTable->table([
+                    'class' => 'table table-hover align-middle w-100',
+                    'style' => 'border-collapse: separate; border-spacing: 0;'
+                ]) !!}
             </div>
         </div>
     </div>
