@@ -4,8 +4,6 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-5">
-            {{-- Flash messages --}}
-            @include('layouts.flash-messages')
 
             <div class="card border-0 shadow-sm p-4" 
                  style="background:#fff; border-radius:8px; font-family:'Montserrat','Segoe UI',sans-serif;">
@@ -26,8 +24,7 @@
                             name="email" 
                             id="email" 
                             class="form-control shadow-sm @error('email') is-invalid @enderror" 
-                            value="{{ old('email') }}" 
-                            required 
+                            value="{{ old('email') }}"  
                             autofocus>
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -42,8 +39,7 @@
                             type="password" 
                             name="password" 
                             id="password" 
-                            class="form-control shadow-sm @error('password') is-invalid @enderror" 
-                            required>
+                            class="form-control shadow-sm @error('password') is-invalid @enderror" >
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

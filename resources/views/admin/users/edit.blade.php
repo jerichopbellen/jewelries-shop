@@ -4,8 +4,6 @@
 <div class="container py-5" style="font-family:'Montserrat','Segoe UI',sans-serif;">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            {{-- Flash messages --}}
-            @include('layouts.flash-messages')
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="fw-bold mb-0" style="color:#001f3f; letter-spacing:1px;">

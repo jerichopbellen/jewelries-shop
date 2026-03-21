@@ -4,8 +4,6 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-5">
-            {{-- Flash messages --}}
-            @include('layouts.flash-messages')
 
             <div class="card border-0 shadow-sm p-4" 
                  style="background:#fff; border-radius:8px; font-family:'Montserrat','Segoe UI',sans-serif;">

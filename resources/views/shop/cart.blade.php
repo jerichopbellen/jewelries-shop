@@ -6,9 +6,6 @@
         YOUR CART
     </h1>
 
-    {{-- Flash messages --}}
-    @include('layouts.flash-messages')
-
     @if(empty($cart))
         <p class="text-muted text-center mb-4" style="font-size:1rem; letter-spacing:0.5px;">
             Your cart is empty.

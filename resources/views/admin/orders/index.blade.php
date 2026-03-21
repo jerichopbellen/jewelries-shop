@@ -2,9 +2,6 @@
 
 @section('body')
 <div class="container py-5" style="font-family:'Montserrat','Segoe UI',sans-serif;">
-    {{-- Flash messages for status updates --}}
-    @include('layouts.flash-messages')
-
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold mb-0" style="color:#001f3f; letter-spacing:1px;">
             <i class="fa fa-shopping-bag" style="color:#d4af37;"></i> CUSTOMER ORDERS

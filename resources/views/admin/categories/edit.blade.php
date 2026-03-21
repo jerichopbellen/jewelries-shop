@@ -4,8 +4,6 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-6">
-            {{-- Flash messages --}}
-            @include('layouts.flash-messages')
 
             <div class="card border-0 shadow-sm p-4" 
                  style="background:#fff; border-radius:8px; font-family:'Montserrat','Segoe UI',sans-serif;">
@@ -23,7 +21,7 @@
                         <label class="form-label" style="color:#001f3f; font-weight:500;">Category Name</label>
                         <input type="text" name="name" 
                                class="form-control shadow-sm @error('name') is-invalid @enderror" 
-                               value="{{ old('name', $category->name) }}" required autofocus>
+                               value="{{ old('name', $category->name) }}" autofocus>
                         @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

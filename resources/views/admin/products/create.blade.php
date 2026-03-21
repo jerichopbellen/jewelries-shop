@@ -4,8 +4,6 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            {{-- Flash messages --}}
-            @include('layouts.flash-messages')
 
             <div class="card border-0 shadow-sm p-4" 
                  style="background:#fff; border-radius:8px; font-family:'Montserrat','Segoe UI',sans-serif;">
@@ -19,12 +17,12 @@
 
                     <div class="mb-3">
                         <label class="form-label" style="color:#001f3f; font-weight:500;">Product Name</label>
-                        <input type="text" name="name" class="form-control shadow-sm" required>
+                        <input type="text" name="name" class="form-control shadow-sm" >
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label" style="color:#001f3f; font-weight:500;">Category</label>
-                        <select name="category_id" class="form-select shadow-sm" required>
+                        <select name="category_id" class="form-select shadow-sm" >
                             @foreach(\App\Models\Category::all() as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
@@ -33,17 +31,17 @@
 
                     <div class="mb-3">
                         <label class="form-label" style="color:#001f3f; font-weight:500;">Description</label>
-                        <textarea name="description" class="form-control shadow-sm" rows="4" required></textarea>
+                        <textarea name="description" class="form-control shadow-sm" rows="4" ></textarea>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label" style="color:#001f3f; font-weight:500;">Price</label>
-                        <input type="number" name="price" step="0.01" class="form-control shadow-sm" required>
+                        <input type="number" name="price" step="0.01" class="form-control shadow-sm" >
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label" style="color:#001f3f; font-weight:500;">Stock</label>
-                        <input type="number" name="stock" class="form-control shadow-sm" required>
+                        <input type="number" name="stock" class="form-control shadow-sm" >
                     </div>
 
                     <div class="mb-3">
