@@ -18,23 +18,29 @@ class ShopController extends Controller
      */
     public function index(Request $request)
     {
-        // Eager load relations
-        $query = Product::with(['category', 'images']);
+        $search = $request->input('search');
+        $category = $request->input('category');
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
 
-        // Filter by category if selected
-        if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+        if (!empty($search)) {
+            $products = Product::search($search);
+        } else {
+            $products = Product::query();
         }
 
-        // Search by product name
-        if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
+        $products = $products->when($category, function ($query) use ($category) {
+                return $query->where('category_id', $category);
+            })
+            ->when($minPrice !== null, function ($query) use ($minPrice) {
+                return $query->where('price', '>=', $minPrice);
+            })
+            ->when($maxPrice !== null, function ($query) use ($maxPrice) {
+                return $query->where('price', '<=', $maxPrice);
+            })
+            ->paginate(12)
+            ->withQueryString();
 
-        // Paginate results
-        $products = $query->latest()->paginate(12);
-
-        // Fetch categories for dropdown
         $categories = Category::all();
 
         return view('shop.index', compact('products', 'categories'));

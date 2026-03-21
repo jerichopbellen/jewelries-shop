@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Product extends Model
 {
@@ -22,5 +23,15 @@ class Product extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    use Searchable;
+
+    public function toSearchableArray()
+    {
+        return [
+            'id'   => (int) $this->id,
+            'name' => $this->name,
+        ];
     }
 }
