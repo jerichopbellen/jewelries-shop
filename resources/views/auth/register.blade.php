@@ -42,7 +42,7 @@
                         <label for="name" class="form-label" style="color:#001f3f; font-weight:500;">Full Name</label>
                         <input type="text" name="name" id="name" 
                                class="form-control shadow-sm @error('name') is-invalid @enderror" 
-                               value="{{ old('name') }}" required autofocus>
+                               value="{{ old('name') }}"  autofocus>
                         @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -52,7 +52,7 @@
                         <label for="email" class="form-label" style="color:#001f3f; font-weight:500;">Email Address</label>
                         <input type="email" name="email" id="email" 
                                class="form-control shadow-sm @error('email') is-invalid @enderror" 
-                               value="{{ old('email') }}" required>
+                               value="{{ old('email') }}">
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -62,7 +62,7 @@
                         <div class="col-md-6">
                             <label for="password" class="form-label" style="color:#001f3f; font-weight:500;">Password</label>
                             <input type="password" name="password" id="password" 
-                                   class="form-control shadow-sm @error('password') is-invalid @enderror" required>
+                                   class="form-control shadow-sm @error('password') is-invalid @enderror">
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -70,7 +70,7 @@
                         <div class="col-md-6">
                             <label for="password_confirmation" class="form-label" style="color:#001f3f; font-weight:500;">Confirm</label>
                             <input type="password" name="password_confirmation" id="password_confirmation" 
-                                   class="form-control shadow-sm" required>
+                                   class="form-control shadow-sm" >
                         </div>
                     </div>
 
