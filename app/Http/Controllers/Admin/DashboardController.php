@@ -15,33 +15,44 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. YEARLY REVENUE CHART (Line Chart per Year)
+        // 1. YEARLY REVENUE CHART
         $yearlyChart = new YearlyRevenueChart;
         $yearlyData = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
             ->selectRaw('YEAR(orders.created_at) as year, SUM(order_items.price * order_items.quantity) as total')
-            ->groupBy('year')
-            ->orderBy('year', 'asc')
-            ->pluck('total', 'year')
-            ->toArray();
+            ->groupBy('year')->orderBy('year', 'asc')
+            ->pluck('total', 'year')->toArray();
 
-        // Labels are now the years (2022, 2023, etc.)
         $yearlyChart->labels(array_keys($yearlyData));
-        $yearlyChart->dataset('Yearly Revenue Trend', 'line', array_values($yearlyData))
+        $yearlyChart->dataset('Yearly Revenue', 'line', array_values($yearlyData))
             ->color('#d4af37')->backgroundcolor('rgba(212, 175, 55, 0.1)');
 
-        // 2. PRODUCT SHARE CHART (PIE) - UNTOUCHED
+        // 2. PRODUCT SHARE CHART (Top 10 - No Legend)
         $productChart = new ProductShareChart;
         $productSales = OrderItem::join('products', 'order_items.product_id', '=', 'products.id')
-            ->select('products.name', DB::raw('SUM(order_items.price * order_items.quantity) as total'))
-            ->groupBy('products.name')->get();
+            ->select('products.name')
+            ->selectRaw('CAST(SUM(order_items.price * order_items.quantity) AS UNSIGNED) as total')
+            ->groupBy('products.name')
+            ->orderBy('total', 'desc')
+            ->take(10) // Limit to top 10
+            ->get();
 
         $productChart->labels($productSales->pluck('name')->toArray());
         $productChart->dataset('Sales Share', 'pie', $productSales->pluck('total')->toArray())
-            ->backgroundcolor(['#001f3f', '#d4af37', '#1a3a5a', '#b8860b', '#004080']);
+            ->backgroundcolor(['#001f3f', '#d4af37', '#1a3a5a', '#b8860b', '#004080', '#2c3e50', '#f1c40f', '#2980b9', '#8e44ad', '#16a085']);
+        
+        // Disable Legend for cleaner UI
+        $productChart->options([
+            'legend' => ['display' => false],
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+        ]);
 
-        // 3. SALES PERFORMANCE CHART (BAR) - UNTOUCHED
+        // 3. SALES PERFORMANCE CHART (All Time)
         $performanceChart = new SalesPerformanceChart;
-        $start = $request->get('start_date', now()->subDays(7)->format('Y-m-d'));
+        $firstOrder = Order::orderBy('created_at', 'asc')->first();
+        $defaultStart = $firstOrder ? $firstOrder->created_at->format('Y-m-d') : now()->subDays(30)->format('Y-m-d');
+
+        $start = $request->get('start_date', $defaultStart);
         $end = $request->get('end_date', now()->format('Y-m-d'));
 
         $rangeSales = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
@@ -52,6 +63,10 @@ class DashboardController extends Controller
         $performanceChart->labels($rangeSales->pluck('date')->toArray());
         $performanceChart->dataset('Daily Sales', 'bar', $rangeSales->pluck('total')->toArray())
             ->color('#001f3f')->backgroundcolor('#001f3f');
+        
+        $performanceChart->options([
+            'legend' => ['display' => false]
+        ]);
 
         return view('admin.dashboard', compact('yearlyChart', 'productChart', 'performanceChart'));
     }

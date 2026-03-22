@@ -8,12 +8,12 @@
 
     <div class="row mb-4">
         <div class="col-md-8">
-            <div class="card border-0 shadow-sm" style="border-radius:4px;">
+            <div class="card border-0 shadow-sm">
                 <div class="card-header py-3" style="background-color:#001f3f;">
                     <h6 class="m-0 font-weight-bold" style="color:#d4af37; text-transform: uppercase; font-size: 0.8rem;">YEARLY REVENUE TREND</h6>
                 </div>
                 <div class="card-body">
-                    <div style="height: 300px;">
+                    <div style="position: relative; height: 300px;">
                         {!! $yearlyChart->container() !!}
                     </div>
                 </div>
@@ -21,12 +21,12 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius:4px;">
+            <div class="card border-0 shadow-sm">
                 <div class="card-header py-3" style="background-color:#001f3f;">
-                    <h6 class="m-0 font-weight-bold" style="color:#d4af37; text-transform: uppercase; font-size: 0.8rem;">PRODUCT CONTRIBUTION</h6>
+                    <h6 class="m-0 font-weight-bold" style="color:#d4af37; text-transform: uppercase; font-size: 0.8rem;">TOP 10 PRODUCTS</h6>
                 </div>
                 <div class="card-body">
-                    <div style="height: 300px;">
+                    <div style="position: relative; height: 300px;">
                         {!! $productChart->container() !!}
                     </div>
                 </div>
@@ -36,23 +36,20 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card border-0 shadow-sm" style="border-radius:4px;">
+            <div class="card border-0 shadow-sm">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background-color:#001f3f;">
-                    <h6 class="m-0 font-weight-bold" style="color:#d4af37; text-transform: uppercase; font-size: 0.8rem;">
-                        SALES PERFORMANCE RANGE
-                    </h6>
+                    <h6 class="m-0 font-weight-bold" style="color:#d4af37; text-transform: uppercase; font-size: 0.8rem;">SALES PERFORMANCE</h6>
                     <div class="d-flex align-items-center gap-2">
                         <form action="{{ route('admin.dashboard') }}" method="GET" class="d-flex align-items-center" id="dateFilterForm">
                             <input type="hidden" name="start_date" id="start_date">
                             <input type="hidden" name="end_date" id="end_date">
-                            <input type="text" id="date_range_picker" class="form-control form-control-sm border-0 shadow-none" style="width: 240px; border-radius: 4px;" placeholder="Select Date Range">
+                            <input type="text" id="date_range_picker" class="form-control form-control-sm border-0" style="width: 220px;" placeholder="Filter Date Range">
                         </form>
-                        {{-- Added Clear Button --}}
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-sm btn-outline-light px-3" style="border-color:#d4af37; color:#d4af37;">Clear</a>
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-sm btn-outline-warning text-white border-warning">Clear</a>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div style="height: 350px;">
+                    <div style="position: relative; height: 350px;">
                         {!! $performanceChart->container() !!}
                     </div>
                 </div>
@@ -64,7 +61,6 @@
 
 @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
-    
     {!! $yearlyChart->script() !!}
     {!! $productChart->script() !!}
     {!! $performanceChart->script() !!}

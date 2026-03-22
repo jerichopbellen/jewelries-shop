@@ -54,9 +54,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     // Products
     Route::post('/products/import', [ProductController::class, 'import'])->name('products.import');
@@ -68,6 +68,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('users', UserController::class);
 
     // Admin Reviews
-    Route::get('/reviews', [AdminReview::class, 'index'])->name('reviews.index');
-    Route::delete('/reviews/{review}', [AdminReview::class, 'destroy'])->name('reviews.destroy');
+    Route::get('/reviews', [AdminReview::class, 'index'])->name('admin.reviews.index');
+    Route::delete('/reviews/{review}', [AdminReview::class, 'destroy'])->name('admin.reviews.destroy');
 });
