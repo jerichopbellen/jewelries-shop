@@ -4,6 +4,12 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-5">
+            @if (session('verification_link'))
+                <div class="alert alert-warning border-0 small shadow-sm mb-3">
+                    <i class="fa fa-exclamation-circle me-1"></i>
+                    {!! session('verification_link') !!}
+                </div>
+            @endif
 
             <div class="card border-0 shadow-sm p-4" 
                  style="background:#fff; border-radius:8px; font-family:'Montserrat','Segoe UI',sans-serif;">
