@@ -9,10 +9,6 @@
                     <h4 class="fw-bold mb-3" style="color: #001f3f;">RESEND VERIFICATION</h4>
                     <p class="text-muted small">Enter your email address and we will send you a new verification link.</p>
 
-                    @if (session('success'))
-                        <div class="alert alert-success small border-0">{{ session('success') }}</div>
-                    @endif
-
                     <form action="{{ route('verification.resend.submit') }}" method="POST">
                         @csrf
                         <div class="mb-3 text-start">

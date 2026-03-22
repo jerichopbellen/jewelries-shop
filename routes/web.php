@@ -11,15 +11,32 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController as ShopReview;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Verified;
+use App\Models\User;
 
 Route::get('/', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/products/{product}', [ShopController::class, 'show'])->name('shop.show');
 
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect()->route('login')->with('success', 'Email verified! You can now log in.');
-})->middleware(['auth', 'signed'])->name('verification.verify');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    $user = User::findOrFail($id);
+
+    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        return redirect()->route('login')->with('error', 'Invalid verification link.');
+    }
+
+    if ($user->hasVerifiedEmail()) {
+        return redirect()->route('login')->with('success', 'Email already verified. Please log in.');
+    }
+
+    if ($user->markEmailAsVerified()) {
+        event(new Verified($user));
+    }
+
+    return redirect()->route('login')->with('success', 'Email verified! You can now log in to your GLOW account.');
+})->middleware(['signed'])->name('verification.verify');
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -31,8 +48,6 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
     Route::post('/products/{product}/add-to-cart', [ShopController::class, 'addToCart'])->name('shop.addToCart');
     Route::get('/cart', [ShopController::class, 'cart'])->name('shop.cart');
     Route::delete('/cart/{product}', [ShopController::class, 'removeFromCart'])->name('shop.removeFromCart');
