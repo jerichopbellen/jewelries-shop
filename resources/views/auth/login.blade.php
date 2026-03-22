@@ -51,13 +51,6 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" name="remember" class="form-check-input" id="remember">
-                        <label class="form-check-label" for="remember" style="color:#001f3f;">
-                            Remember me
-                        </label>
-                    </div>
-
                     <button type="submit" 
                             class="btn w-100 py-2" 
                             style="background-color:#001f3f; color:#d4af37; border:2px solid #d4af37; font-weight:600; letter-spacing:0.5px;">
