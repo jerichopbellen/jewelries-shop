@@ -12,29 +12,42 @@ class OrdersDataTable extends DataTable
     {
         return datatables()
             ->eloquent($query)
+            ->filter(function ($query) {
+                // HANDLE THE STATUS FILTER LOGIC
+                if (request()->has('status') && request('status') != '') {
+                    $query->where('status', request('status'));
+                }
+            })
             ->addColumn('customer', function ($row) {
-                return $row->user->name;
+                return $row->user ? $row->user->name : 'Guest';
             })
             ->addColumn('items', function ($row) {
-                $html = '<ul class="list-unstyled mb-0">';
+                $html = '<ul class="list-unstyled mb-0" style="font-size: 0.85rem;">';
                 foreach ($row->items as $item) {
-                    $html .= '<li>' . $item->product->name . ' (x' . $item->quantity . ') - ₱' . number_format($item->price, 2) . '</li>';
+                    $html .= '<li>' . ($item->product->name ?? 'Deleted Product') . ' (x' . $item->quantity . ')</li>';
                 }
                 $html .= '</ul>';
                 return $html;
             })
             ->addColumn('total', function ($row) {
-                // Use the accessor from Order model
                 return '₱' . number_format($row->total, 2);
             })
+            ->addColumn('status', function ($row) {
+                $class = match($row->status) {
+                    'pending' => 'bg-warning',
+                    'processing' => 'bg-info',
+                    'shipped' => 'bg-primary',
+                    'delivered' => 'bg-success',
+                    'cancelled' => 'bg-danger',
+                    default => 'bg-secondary'
+                };
+                return '<span class="badge ' . $class . '">' . ucfirst($row->status) . '</span>';
+            })
             ->addColumn('action', function ($row) {
-                return '
-                    <div class="d-flex border-0">
-                        <a href="' . route('orders.show', $row->id) . '" class="btn btn-sm btn-info me-2">View</a>
-                    </div>';
+                return '<a href="' . route('orders.show', $row->id) . '" class="btn btn-sm btn-outline-dark">View Details</a>';
             })
             ->setRowId('id')
-            ->rawColumns(['items', 'action']);
+            ->rawColumns(['items', 'status', 'action']);
     }
 
     public function query(Order $model)
@@ -47,26 +60,31 @@ class OrdersDataTable extends DataTable
         return $this->builder()
             ->setTableId('orders-table')
             ->columns($this->getColumns())
-            ->minifiedAjax()
-            ->orderBy(1);
+            ->minifiedAjax('', 'data.status = $("#status-filter").val();') // SEND STATUS TO SERVER
+            ->orderBy(0, 'desc')
+            ->parameters([
+                'dom' => 'Bfrtip',
+                'buttons' => ['export', 'print', 'reset', 'reload'],
+                // INJECT THE DROPDOWN INTO THE DATATABLE HEADER
+                'initComplete' => "function () {
+                    var select = $('<select id=\"status-filter\" class=\"form-select form-select-sm d-inline-block w-auto ms-2\"><option value=\"\">All Status</option><option value=\"pending\">Pending</option><option value=\"processing\">Processing</option><option value=\"shipped\">Shipped</option><option value=\"delivered\">Delivered</option><option value=\"cancelled\">Cancelled</option></select>')
+                        .appendTo('#orders-table_filter')
+                        .on('change', function () {
+                            window.LaravelDataTables['orders-table'].draw();
+                        });
+                }",
+            ]);
     }
 
     public function getColumns(): array
     {
         return [
-            Column::make('id'),
-            Column::make('customer'),
-            Column::make('total')->title('Total'),
-            Column::make('status'),
-            Column::make('items')
-                ->exportable(false)
-                ->printable(false)
-                ->addClass('text-start'),
-            Column::computed('action')
-                ->exportable(false)
-                ->printable(false)
-                ->width(150)
-                ->addClass('text-center'),
+            Column::make('id')->title('Order #'),
+            Column::make('customer')->title('Customer'),
+            Column::make('total')->title('Total Amount'),
+            Column::make('status')->title('Status'),
+            Column::make('items')->title('Products Ordered')->exportable(false)->printable(false),
+            Column::computed('action')->title('Action')->addClass('text-center'),
         ];
     }
 }

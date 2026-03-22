@@ -6,81 +6,67 @@ use App\Http\Controllers\Controller;
 use App\DataTables\OrdersDataTable;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderStatusUpdated;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(OrdersDataTable $dataTable)
     {
         return $dataTable->render('admin.orders.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * (Optional — usually orders are created by customers, not admins.)
-     */
-    public function create()
-    {
-        return view('admin.orders.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'user_id'      => 'required|exists:users,id',
-            'total_amount' => 'required|numeric|min:0',
-            'status'       => 'required|string|max:50',
-        ]);
-
-        Order::create($validated);
-
-        return redirect()->route('orders.index')->with('success', 'Order created successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(Order $order)
     {
-        // Eager load items and products for display
         $order->load('items.product', 'user');
         return view('admin.orders.show', compact('order'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Order $order)
-    {
-        return view('admin.orders.edit', compact('order'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Order $order)
     {
         $request->validate([
             'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
         ]);
 
-        $order->update(['status' => $request->status]);
+        $oldStatus = $order->status;
+        $newStatus = $request->status;
 
-        return back()->with('success', 'Order status updated to ' . ucfirst($request->status));
+        // 1. DEDUCT STOCK: Only when moving from 'processing' to 'shipped'
+        if ($oldStatus === 'processing' && $newStatus === 'shipped') {
+            foreach ($order->items as $item) {
+                if ($item->product) {
+                    // Safety Check: Ensure we have enough stock before proceeding
+                    if ($item->product->stock < $item->quantity) {
+                        return back()->with('error', "Insufficient stock for {$item->product->name}. Current stock: {$item->product->stock}");
+                    }
+                    
+                    $item->product->decrement('stock', $item->quantity);
+                }
+            }
+        }
+
+        // 2. RESTORE STOCK: If a shipped order is cancelled
+        if ($oldStatus === 'shipped' && $newStatus === 'cancelled') {
+            foreach ($order->items as $item) {
+                if ($item->product) {
+                    $item->product->increment('stock', $item->quantity);
+                }
+            }
+        }
+
+        // Apply the update
+        $order->update(['status' => $newStatus]);
+
+    // PREPARE PDF FOR ATTACHMENT
+    $order->load('items.product', 'user');
+    $pdf = Pdf::loadView('emails.receipt_pdf', compact('order'));
+
+    // SEND EMAIL WITH PDF
+    if ($order->user) {
+        Mail::to($order->user->email)->send(new OrderStatusUpdated($order, $pdf->output()));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Order $order)
-    {
-        $order->delete();
-
-        return redirect()->route('orders.index')->with('success', 'Order deleted successfully.');
+        return back()->with('success', 'Order status updated to ' . ucfirst($newStatus));
     }
 }

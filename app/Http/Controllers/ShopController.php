@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Models\Category;
+use App\Mail\OrderPlaced;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
 
 class ShopController extends Controller
 {
@@ -130,21 +133,19 @@ class ShopController extends Controller
     public function checkout(Request $request)
     {
         $cart = session()->get('cart', []);
+        if (empty($cart)) return back()->with('error', 'Your cart is empty.');
 
         $request->validate([
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:100',
-            'province' => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:20',
-            'country' => 'required|string|max:100',
             'payment_method' => 'required|in:cod,gcash,card',
         ]);
 
-        DB::transaction(function () use ($cart, $request) {
+        $order = DB::transaction(function () use ($cart, $request) {
             $order = Order::create([
                 'user_id' => Auth::id(),
-                'order_number' => Str::uuid(),
+                'order_number' => 'GLW-' . strtoupper(Str::random(8)),
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'city' => $request->city,
@@ -153,22 +154,29 @@ class ShopController extends Controller
                 'country' => $request->country,
                 'payment_method' => $request->payment_method,
                 'status' => 'pending',
-                'tracking_id' => null,
             ]);
 
             foreach ($cart as $item) {
-                OrderItem::create([
-                    'order_id'   => $order->id,
+                $order->items()->create([
                     'product_id' => $item['product_id'],
                     'quantity'   => $item['quantity'],
                     'price'      => $item['price'],
                 ]);
             }
+
+            return $order;
         });
+
+        // Generate PDF Receipt
+        $order->load('items.product', 'user');
+        $pdf = Pdf::loadView('emails.receipt_pdf', compact('order'));
+
+        // Send Email with Attachment
+        Mail::to($order->user->email)->send(new OrderPlaced($order, $pdf->output()));
 
         session()->forget('cart');
 
-        return redirect()->route('shop.index')->with('success', 'Order placed successfully!');
+        return redirect()->route('shop.index')->with('success', 'Order placed successfully! Check your email for the receipt.');
     }
 
     public function ordersIndex()
